@@ -26,11 +26,28 @@ public class DataItemService {
         return repository.save(item);
     }
 
-    public Item updateItem(Item item) {
-        return repository.save(item);
+    public Item updateItem(Long id, Item updatedItem) {
+        Optional<Item> existingItemOpt = repository.findById(id);
+        if (existingItemOpt.isPresent()) {
+            Item existingItem = existingItemOpt.get();
+            // Update only fields that are provided in the updated item
+            existingItem.setName(updatedItem.getName());
+            existingItem.setItemDetails(updatedItem.getItemDetails());
+            existingItem.setAmountPaid(updatedItem.getAmountPaid());
+            existingItem.setActualAmount(updatedItem.getActualAmount());
+            existingItem.setPhoneNumber(updatedItem.getPhoneNumber());
+            existingItem.setUserName(updatedItem.getUserName());
+            return repository.save(existingItem);
+        } else {
+            throw new IllegalArgumentException("Item not found with ID: " + id);
+        }
     }
 
     public void deleteItem(Long id) {
-        repository.deleteById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Item not found with ID: " + id);
+        }
     }
 }

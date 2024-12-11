@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-        import java.util.List;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
@@ -34,23 +34,22 @@ public class DataItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item updatedItem) {
-        return service.getItemById(id)
-                .map(existingItem -> {
-                    existingItem.setName(updatedItem.getName());
-                    existingItem.setItemDetails(updatedItem.getItemDetails());
-                    Item savedItem = service.updateItem(existingItem);
-                    return ResponseEntity.ok(savedItem);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item item) {
+        try {
+            Item updatedItem = service.updateItem(id, item);
+            return ResponseEntity.ok(updatedItem);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
-        if (service.getItemById(id).isPresent()) {
+        try {
             service.deleteItem(id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 }
