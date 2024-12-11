@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Package the Spring Boot application
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 # Use a lightweight Java runtime image for running the application
 FROM openjdk:17-jdk-slim
@@ -17,7 +17,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/target/MobileBackend.jar app.jar
+COPY --from=build /app/target/mobile-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port
 EXPOSE 8080
